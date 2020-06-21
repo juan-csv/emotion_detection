@@ -6,4 +6,4 @@ Emotion detection using Keras and OpenCV with accuracy in validation 70% for dat
 
 Results of accuracy in validation for all models tested:
 
-![](https://github.com/mevo12318/emotion_detection/blob/master/emotion_detection/results/Accuracy.png)
+![alt text](https://github.com/mevo12318/emotion_detection/blob/master/results/Accuracy.png)
