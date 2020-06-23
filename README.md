@@ -11,3 +11,6 @@ How to run:
 Results of accuracy in validation for all models tested
 
 ![alt text](https://github.com/mevo12318/emotion_detection/blob/master/results/Accuracy.png)
+
+![alt text](https://github.com/mevo12318/emotion_detection/blob/master/results/F1_score.png)
+
