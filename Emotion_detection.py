@@ -15,7 +15,6 @@ parser.add_argument('--path', type=str,
                     help="path of image")
 args = vars(parser.parse_args())
 
-
 # instanciar detector
 Detector = fed.predict_emotions()
 type_input = args['input']
@@ -25,12 +24,7 @@ if type_input == 'image':
     #ingestar data
     im = cv2.imread(args['path'])
     # detectar_rostro
-    boxes_face = fed.face_recognition.face_locations(im)
-    if len(boxes_face)!=0:
-        # predecir emociones
-        emotions = Detector.get_emotion(boxes_face,im)
-    else:
-        emotions = []
+    emotions,boxes_face = Detector.get_emotion(im)
     # visualizacion
     if len(emotions)!=0:
         img_post = fed.bounding_box(im,boxes_face,emotions)
@@ -48,12 +42,7 @@ if type_input == 'webcam':
         im = vs.read()
         im = imutils.resize(im, width=720)
         # detectar_rostro
-        boxes_face = fed.face_recognition.face_locations(im)
-        if len(boxes_face)!=0:
-            # predecir emociones
-            emotions = Detector.get_emotion(boxes_face,im)
-        else:
-            emotions = []
+        emotions,boxes_face = Detector.get_emotion(im)
         # visualizacion
         if len(emotions)!=0:
             img_post = fed.bounding_box(im,boxes_face,emotions)
