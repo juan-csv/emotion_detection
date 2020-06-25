@@ -1,16 +1,16 @@
 import config as cfg
 import cv2
-import face_recognition
 import numpy as np
 from keras.models import load_model
 from keras.preprocessing.image import img_to_array
+import dlib
 
 class predict_emotions():
     def __init__(self):
         # cargo modelo de deteccion de emociones
         self.model = load_model(cfg.path_model)
         # cargo modelo de deteccion de rostros frontales
-        self.detect_frontal_face = cv2.CascadeClassifier(cfg.detect_frontal_face)
+        self.detect_frontal_face = dlib.get_frontal_face_detector()
 
     def preprocess_img(self,face_image,rgb=True,w=48,h=48):
         face_image = cv2.resize(face_image, (w,h))
@@ -21,19 +21,12 @@ class predict_emotions():
         face_image = np.expand_dims(face_image, axis=0)
         return face_image
 
-    def detect_faces(self,img):
-        rects,_,confidence = self.detect_frontal_face.detectMultiScale3(img, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30),
-                                        flags=cv2.CASCADE_SCALE_IMAGE, outputRejectLevels = True)
-        #rects = cascade.detectMultiScale(img,minNeighbors=10, scaleFactor=1.05)
-        if len(rects) == 0:
-            return [],[]
-        rects[:,2:] += rects[:,:2]
-        return rects,confidence
-
     def get_emotion(self,img):
         emotions = []
         # detectar_rostro
-        boxes_face,_= self.detect_faces(img)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        rectangles = self.detect_frontal_face(gray, 0)
+        boxes_face = convert_rectangles2array(rectangles,img)
         if len(boxes_face)!=0:
             for box in boxes_face:
                 y0,x0,y1,x1 = box
@@ -48,6 +41,18 @@ class predict_emotions():
             emotions = []
             boxes_face = []
         return emotions,boxes_face
+
+
+def convert_rectangles2array(rectangles,image):
+    res = np.array([])
+    for box in rectangles:
+        [x0,y0,x1,y1] = max(0, box.left()), max(0, box.top()), min(box.right(), image.shape[1]), min(box.bottom(), image.shape[0])
+        new_box = np.array([x0,y0,x1,y1])
+        if res.size == 0:
+            res = np.expand_dims(new_box,axis=0)
+        else:
+            res = np.vstack((res,new_box))
+    return res
 
 
 def bounding_box(img,box,match_name=[]):
